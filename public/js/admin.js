@@ -48,18 +48,20 @@ socket.on('login', function(data) {
 
 socket.on('chat message', function(data) {
 	$inputMessage = $('#' + data.roomID);
-	var $parent = $inputMessage.parent();
-	var $messages = $parent.children(".messages");
-	if (data.isAdmin)
-		var $usernameDiv = $('<span class="username"/>').text("CronJ");
-	else
-		var $usernameDiv = $('<span class="username"/>').text("Client");
+	var $parent = $inputMessage.parent().parent();
+	var $chatbox = $parent.children(".chatbox");
+	var $messages = $chatbox.children(".chat-messages");
 
-	var $messageBodyDiv = $('<span class="messageBody">').text(data.msg);
+	var $messagebox = "";
+	if (data.isAdmin)
+		$messagebox = "<div class='message-box-holder'><div class='message-box message-admin'>"+ data.msg +"</div></div>";
+	else
+		$messagebox = "<div class='message-box-holder'><div class='message-box message-partner'>"+ data.msg +"</div></div>";
+	
 	var $timestampDiv = $('<span class="timestamp">').text((data.timestamp).toLocaleString().substr(15, 6));
-	var $messageDiv = $('<li class="message"/>').append($usernameDiv, $messageBodyDiv, $timestampDiv);
-	$messages.append($messageDiv);
-	$messages[0].scrollTop = $messages[0].scrollHeight;
+	$messages.append($messagebox);
+	var $messageBoxes = $messages.children(".message-box-holder");
+	$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
 	$newChat.play();
 });
 
@@ -75,12 +77,10 @@ socket.on('admin removed', function(username) {
 socket.on('New Client', function(data) {
 	$('.container').append(getChatArea(data.roomID));
 	$inputMessage = $('#' + data.roomID);
-	var $parent = $inputMessage.parent();
+	var $parent = $inputMessage.parent().parent();
 	var $chatbox = $parent.children(".chatbox");
 	var $messages = $chatbox.children(".chat-messages");
 	var $chatHeader = $parent.siblings(".chatHeader");
-	console.log('$chatHeader', $chatHeader);
-	var $messageBoxHolder = "";
 
 	var len = data.history.length;
 	var partnerName = "<span class='partner-name'>"+ data.details[0] +"</span>";
@@ -88,7 +88,6 @@ socket.on('New Client', function(data) {
 	var partnerPhone = "<span class='partner-phone'>"+ data.details[2] +"</span>";
 
 	$chatHeader.append(partnerName + " <br> " + partnerEmail + partnerPhone);
-	var sender;
 	for (var i = len - 1; i >= 0; i--) {
 		var $messagebox = "";
 		if (data["history"][i]["who"])
@@ -96,12 +95,10 @@ socket.on('New Client', function(data) {
 		else
 			$messagebox = "<div class='message-box-holder'><div class='message-box message-partner'>"+ data["history"][i]["what"] +"</div></div>";
 		
-		//var $usernameDiv = $('<span class="username"/>').text(sender);
-		//var $messageBodyDiv = $('<span class="messageBody">').text(data["history"][i]["what"]);
-		//var $timestampDiv = $('<span class="timestamp">').text((data["history"][i]["when"]).toLocaleString().substr(15, 6));
-		//var $messageDiv = $('<li class="message"/>').append($usernameDiv, $messageBodyDiv, $timestampDiv);
+		var $timestampDiv = $('<span class="timestamp">').text((data["history"][i]["when"]).toLocaleString().substr(15, 6));
 		$messages.append($messagebox);
-		$messages[0].scrollTop = $messages[0].scrollHeight;
+		var $messageBoxes = $messages.children(".message-box-holder");
+		$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
 	}
 	if (!data.justJoined) {
 		$newUser.play();
@@ -178,8 +175,10 @@ $passwordInput.keypress(function(event) {
 
 function sendMessage(id) {
 	$inputMessage = $('#' + id);
-	var $parent = $inputMessage.parent();
-	var $messages = $parent.children(".messages");
+	var $parent = $inputMessage.parent().parent();
+	var $chatbox = $parent.children(".chatbox");
+	var $messages = $chatbox.children(".chat-messages");
+
 	var message = $inputMessage.val();
 	// Prevent markup from being injected into the message
 	message = cleanInput(message);
@@ -193,12 +192,17 @@ function sendMessage(id) {
 			msg: message,
 			timestamp: time
 		});
-		var $usernameDiv = $('<span class="username"/>').text("You");
-		var $messageBodyDiv = $('<span class="messageBody">').text(message);
+
+		var $messagebox = "<div class='message-box-holder'><div class='message-box'>"+ message +"</div></div>";
+
+		// var $usernameDiv = $('<span class="username"/>').text("You");
+		// var $messageBodyDiv = $('<span class="messageBody">').text(message);
 		var $timestampDiv = $('<span class="timestamp">').text(time.toLocaleString().substr(15, 6));
-		var $messageDiv = $('<li class="message"/>').append($usernameDiv, $messageBodyDiv, $timestampDiv);
-		$messages.append($messageDiv);
-		$messages[0].scrollTop = $messages[0].scrollHeight;
+		//var $messageDiv = $('<li class="message"/>').append($usernameDiv, $messageBodyDiv, $timestampDiv);
+		
+		$messages.append($messagebox);
+		var $messageBoxes = $messages.children(".message-box-holder");
+		$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
 	}
 }
 
@@ -247,7 +251,10 @@ function getChatArea(id) {
 				"<div class='chat-messages'>" +
 				"</div>"+
 			"</div>"+
-			"<div class='typing'></div><input class='inputMessage' id='" + id + "'' placeholder='Type here...'/></div>");
+			"<div class='chat-input-holder'>" +
+				"<input class='chat-input inputMessage' id='" + id + "'' placeholder='Type here...' />" +
+				// "<input type='submit' value='Send' class='message-send' />"+
+			"</div>");
 }	
 
 function setUsername() {

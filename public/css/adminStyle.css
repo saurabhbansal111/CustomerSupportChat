@@ -150,7 +150,7 @@ ul {
 }
 
 .chatHeader {
-    height: 40px;
+    height: 12%;
     margin: 0;
     padding: 5px;
     border-bottom: 0.1em solid #000;
@@ -242,11 +242,12 @@ ul {
 
 
 .chatbox-holder{
-    height: 100%;
+    height: 88%;
+    position: relative;
 }
 .chatbox {
   width: 100%;
-  height: 75%;
+  height: 85%;
   margin: 0 20px 0 0;
   position: relative;
   display: flex;
@@ -409,8 +410,10 @@ ul {
 }
 
 .chat-input-holder {
-  display: flex;
   border-top: 1px solid rgba(0, 0, 0, .1);
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
 }
 
 .chat-input {

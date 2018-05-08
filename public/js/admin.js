@@ -61,7 +61,7 @@ socket.on('chat message', function(data) {
 	var $timestampDiv = $('<span class="timestamp">').text((data.timestamp).toLocaleString().substr(15, 6));
 	$messages.append($messagebox);
 	var $messageBoxes = $messages.children(".message-box-holder");
-	$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
+	$messages[0].scrollTop = $messages[0].scrollHeight;
 	$newChat.play();
 });
 
@@ -98,7 +98,7 @@ socket.on('New Client', function(data) {
 		var $timestampDiv = $('<span class="timestamp">').text((data["history"][i]["when"]).toLocaleString().substr(15, 6));
 		$messages.append($messagebox);
 		var $messageBoxes = $messages.children(".message-box-holder");
-		$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
+		$messages[0].scrollTop = $messages[0].scrollHeight;
 	}
 	if (!data.justJoined) {
 		$newUser.play();
@@ -202,7 +202,7 @@ function sendMessage(id) {
 		
 		$messages.append($messagebox);
 		var $messageBoxes = $messages.children(".message-box-holder");
-		$messageBoxes[0].scrollTop = $messageBoxes[0].scrollHeight;
+		$messages[0].scrollTop = $messages[0].scrollHeight;
 	}
 }
 
